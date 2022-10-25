@@ -83,7 +83,6 @@ bool Syslog::log(uint16_t pri, const char *message) {
   return this->_sendLog(pri, message);
 }
 
-
 bool Syslog::vlogf(uint16_t pri, const char *fmt, va_list args) {
   char *message;
   size_t initialLen;
@@ -93,8 +92,10 @@ bool Syslog::vlogf(uint16_t pri, const char *fmt, va_list args) {
   initialLen = strlen(fmt);
 
   message = new char[initialLen + 1];
-
-  len = vsnprintf(message, initialLen + 1, fmt, args);
+  va_list args2;
+  va_copy(args2, args);
+  len = vsnprintf(message, initialLen + 1, fmt, args2);
+  va_end(args2);
   if (len > initialLen) {
     delete[] message;
     message = new char[len + 1];
@@ -117,8 +118,10 @@ bool Syslog::vlogf_P(uint16_t pri, PGM_P fmt_P, va_list args) {
   initialLen = strlen_P(fmt_P);
 
   message = new char[initialLen + 1];
-
-  len = vsnprintf_P(message, initialLen + 1, fmt_P, args);
+  va_list args2;
+  va_copy(args2, args);
+  len = vsnprintf_P(message, initialLen + 1, fmt_P, args2);
+  va_end(args2);
   if (len > initialLen) {
     delete[] message;
     message = new char[len + 1];
