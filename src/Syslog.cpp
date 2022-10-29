@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdarg.h>
+#include <memory>
 #include <Arduino.h>
 
 #include "Syslog.h"
@@ -91,12 +92,11 @@ bool Syslog::vlogf(uint16_t pri, const char *fmt, va_list args) {
   if (len <= 0) {
     return this->_sendLog(pri, "");
   }
-  auto* message = new char[len + 1];
-  vsnprintf(message, len + 1, fmt, args);
+  auto message = std::make_unique<char[]>(len + 1);
+  vsnprintf(message.get(), len + 1, fmt, args);
 
-  auto result = this->_sendLog(pri, message);
+  auto result = this->_sendLog(pri, message.get());
 
-  delete[] message;
   return result;
 }
 
@@ -108,12 +108,11 @@ bool Syslog::vlogf_P(uint16_t pri, PGM_P fmt_P, va_list args) {
   if (len <= 0) {
     return this->_sendLog(pri, "");
   }
-  auto* message = new char[len + 1];
-  vsnprintf(message, len + 1, fmt_P, args);
+  auto message = std::make_unique<char[]>(len + 1);
+  vsnprintf(message.get(), len + 1, fmt_P, args);
 
-  auto result = this->_sendLog(pri, message);
+  auto result = this->_sendLog(pri, message.get());
 
-  delete[] message;
   return result;
 }
 
